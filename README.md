@@ -1,8 +1,11 @@
 MyRenderer
-Base code for INF584 "Image Synthesis" Assignments
+SSDO feature
+Described in the following paper: Approximating Dynamic Global Illumination in Image Space
+ https://people.mpi-inf.mpg.de/~ritschel/Papers/SSDO.pdf
 ==================================================
 
-Author: Tamy Boubekeur (tamy.boubekeur@telecom-paris.fr)
+Author of base code: Tamy Boubekeur (tamy.boubekeur@telecom-paris.fr)
+Author of the features: Mohamed Rached Waly 
 
 ### Building
 
