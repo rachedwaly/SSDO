@@ -1,6 +1,7 @@
 #version 450 core
-out vec4 FragColor;
 #define M_PI 3.14159265358979323
+out vec4 FragColor;
+
 in vec2 TexCoords;
 
 uniform sampler2D gPosition;
@@ -16,7 +17,7 @@ uniform vec2 noiseScale;
 uniform mat4 projection;
 
 vec3 calculateIndirectLight(float cosThetaSi,float cosThetaRi,float di,vec3 color){
-    return (cosThetaSi/pow(di,2))*color;
+    return (cosThetaSi*cosThetaRi)*color*pow((di/radius),2);
 
 } 
 
@@ -62,16 +63,17 @@ void main()
         
         //remove back facing patches
         float cosThetaSi=max(dot(transmittance,sampleNormal),0.0);
-        float cosThetaRi=max(dot(transmittance,normal),0.0);
+        float cosThetaRi=max(dot(-transmittance,normal),0.0);
         
 
-        
+       
 
         float rangeCheck=radius / abs(fragPos.z - sampleDepth);
 
         //Verify occlusion and range
-        if ((sampleDepth>=samplePos.z+bias) &&(rangeCheck>=1.0)) { 
-            Ldi+=sampleColor*pow(di,2);
+        if ((sampleDepth>=samplePos.z+bias)&&(rangeCheck>=1.0)) { 
+            occlusion++;
+            Ldi+=calculateIndirectLight(cosThetaSi,cosThetaRi,di,sampleColor);
         }
             
     }

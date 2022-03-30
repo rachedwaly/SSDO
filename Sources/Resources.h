@@ -11,16 +11,15 @@
 #include <string>
 
 static const std::string BASE_WINDOW_TITLE ("INF584 Image Synthesis - Practical Assignment");
-
+/*
 static const std::string SHADER_PATH ("/Resources/Shaders/");
 static const std::string DEFAULT_MESH_FILENAME ("/Resources/Models/monkey.off");
 static const std::string DEFAULT_MATERIAL_DIRNAME ("/Resources/Materials/");
 static const std::string MODELS_PATH("/Resources/Models/");
+*/
 
 
-/*
 static const std::string SHADER_PATH("/../../Resources/Shaders/");
 static const std::string DEFAULT_MESH_FILENAME("/../../Resources/Models/monkey.off");
 static const std::string DEFAULT_MATERIAL_DIRNAME("/../../Resources/Materials/");
 static const std::string MODELS_PATH("/../../Resources/Models/");
-*/
