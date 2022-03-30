@@ -38,8 +38,8 @@ add_executable (
 	Sources/Ray.h
 	Sources/AABBBuilder.h
 	Sources/AABBBuilder.cpp
-	Sources/SSAO.cpp
-	Sources/SSAO.h
+	Sources/DefferedRenderer.cpp
+	Sources/DefferedRenderer.h
 
 )
 

@@ -8,6 +8,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D texNoise;
 uniform sampler2D lightPass;
+uniform float control;
 
 uniform vec3 samples[200];
 uniform int kernelSize;
@@ -17,7 +18,7 @@ uniform vec2 noiseScale;
 uniform mat4 projection;
 
 vec3 calculateIndirectLight(float cosThetaSi,float cosThetaRi,float di,vec3 color){
-    return (cosThetaSi*cosThetaRi)*color*pow((di/radius),2);
+    return (cosThetaSi*cosThetaRi)*color*(1-(di/radius));
 
 } 
 
@@ -77,5 +78,5 @@ void main()
         }
             
     }
-    FragColor = vec4(Ldi,1.0); 
+    FragColor = vec4(control*Ldi/occlusion,1.0); 
 }

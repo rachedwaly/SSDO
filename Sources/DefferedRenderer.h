@@ -48,6 +48,13 @@ public:
 		withSSFeature = !withSSFeature;
 	}
 
+	bool SSDOisActive() {
+		return SSDOactive;
+	}
+	bool SSAOisActive() {
+		return SSAOactive;
+	}
+
 	void activateDeffered() {
 		defferedActive = true;
 		SSDOactive = false;
@@ -78,7 +85,9 @@ public:
 
 
 	GLuint loadTextureFromFileToGPU(const std::string& filename,int type=0);
-
+	float indirectLightPower = 1.0f;
+	float radius = 0.35f;
+	float bias = 0.025f;
 private:
 	GLuint genGPUBuffer(size_t elementSize, size_t numElements, const void* data);
 	GLuint genGPUVertexArray(GLuint posVbo, GLuint ibo, GLuint textVbo, bool hasNormals, GLuint normalVbo);
@@ -127,15 +136,14 @@ private:
 	std::vector<glm::vec3> ssaoNoise = {};
 
 	bool withSSFeature = true; //with screen space feature enable ssdo or ssao depends on the mode
-
+	
 	bool SSAOactive = true;
 	bool SSDOactive = false;
 	bool defferedActive = false;
 	
 	bool showOnlySSAOTexture=false;
 
-	float radius = 0.35f;
-	float bias = 0.025f;
+
 
 };
 

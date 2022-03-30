@@ -1,7 +1,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "SSAO.h"
+#include "DefferedRenderer.h"
 #include <glad/glad.h>
 #include "Resources.h"
 #include "Error.h"
@@ -215,7 +215,7 @@ void DefferedRenderer::genGBuffer() {
 	// SSAO color buffer
 	glGenTextures(1, &ssaoColorBuffer);
 	glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
@@ -227,7 +227,7 @@ void DefferedRenderer::genGBuffer() {
 	
 	glGenTextures(1, &ssaoColorBufferBlur);
 	glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
@@ -240,7 +240,7 @@ void DefferedRenderer::genGBuffer() {
 	// Direct pass of light color buffer
 	glGenTextures(1, &directLColorBuffer);
 	glBindTexture(GL_TEXTURE_2D, directLColorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, directLColorBuffer, 0);
@@ -252,7 +252,7 @@ void DefferedRenderer::genGBuffer() {
 	// indrect pass of light color buffer
 	glGenTextures(1, &indirectLColorBuffer);
 	glBindTexture(GL_TEXTURE_2D, indirectLColorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, widthW, heightW, 0, GL_RED, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, indirectLColorBuffer, 0);
@@ -271,7 +271,7 @@ void DefferedRenderer::genGBuffer() {
 		sample *= r4;
 		float scale = float(i) / kernelSize;
 
-		//scale samples s.t. they're more aligned to center of kernel
+		//scale samples s.t. they're closer to center of kernel
 		scale = lerp(0.1f, 1.0f, scale * scale);
 		sample *= scale;
 		ssaoKernel.push_back(sample);
@@ -481,6 +481,7 @@ void DefferedRenderer::SSDO(std::shared_ptr<Scene> scenePtr)
 	m_indirectLShaderProgramPtr->set("kernelSize", kernelSize);
 	m_indirectLShaderProgramPtr->set("radius", radius);
 	m_indirectLShaderProgramPtr->set("bias", bias);
+	m_indirectLShaderProgramPtr->set("control", indirectLightPower);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);

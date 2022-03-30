@@ -39,7 +39,7 @@ namespace fs = std::filesystem;
 #include "RayTracer.h"
 
 #include "Material.h"
-#include "SSAO.h"
+#include "DefferedRenderer.h"
 
 using namespace std;
 
@@ -47,13 +47,13 @@ using namespace std;
 
 
 #define DEFFERED
-//#define RASTERIZER
+//#define LAB
 
 
 // Window parameters
 static GLFWwindow* windowPtr = nullptr;
 static std::shared_ptr<Scene> scenePtr;
-#ifdef RASTERIZER
+#ifdef LAB
 static std::shared_ptr<Rasterizer> rasterizerPtr;
 static std::shared_ptr<RayTracer> rayTracerPtr;
 #endif
@@ -102,7 +102,7 @@ void printHelp() {
 		+ "\t* H: print this help\n"
 		+ "\t* F: decrease field of view\n"
 		+ "\t* G: increase field of view\n"
-#ifdef RASTERIZER
+#ifdef LAB
 		+ "\t* F12: reload GPU shaders\n"
 		+ "\t* TAB: switch between rasterization and ray tracing display\n"
 		+ "\t* K: execute ray tracing with accelerating data structure\n"
@@ -111,10 +111,14 @@ void printHelp() {
 
 #ifdef DEFFERED
 	+"\t* S: toggle screen space feature can be SSDO or SSAO\n"
-	+ "\t* F1: activate SSAO mode in the scene\n"
-	+ "\t* F2: activate standard Deffered mode in the scene\n"
+	+ "\t* F2: activate SSAO mode in the scene\n"
+	+ "\t* F1: activate standard Deffered mode in the scene\n"
 	+ "\t* F3: activate SSDO mode in the scene\n"
-	+ "\t* F4: show only the SSAO texture on the red channel\n");
+	+ "\t* F4: show only the SSAO texture on the red channel\n"	
+	+ "\t* B/N decrease/increase bias in blocker test in SSDO/SSAO mode\n" + 
+	"\t*   J/K decrease/increase radius in SSDO/SSAO mode\n" +
+	"\t*   Y/U decrease/increase indirect Light bounce in SSDO mode\n");
+
 #endif
 
 }
@@ -123,7 +127,7 @@ void printHelp() {
 void raytrace() {
 	int width, height;
 	glfwGetWindowSize(windowPtr, &width, &height);
-#ifdef RASTERIZER
+#ifdef LAB
 	rayTracerPtr->setResolution(width, height);
 	rayTracerPtr->render(scenePtr);
 #endif
@@ -134,7 +138,7 @@ void raytrace() {
 void raytraceAABB() {
 	int width, height;
 	glfwGetWindowSize(windowPtr, &width, &height);
-#ifdef RASTERIZER
+#ifdef LAB
 	rayTracerPtr->setResolution(width, height);
 	rayTracerPtr->renderWithAABB(scenePtr);
 #endif
@@ -150,7 +154,7 @@ void keyCallback(GLFWwindow* windowPtr, int key, int scancode, int action, int m
 			glfwSetWindowShouldClose(windowPtr, true); // Closes the application if the escape key is pressed
 		}
 		else if (action == GLFW_PRESS && key == GLFW_KEY_F12) {
-#ifdef RASTERIZER
+#ifdef LAB
 			rasterizerPtr->loadShaderProgram(basePath);
 #endif
 		}
@@ -165,11 +169,11 @@ void keyCallback(GLFWwindow* windowPtr, int key, int scancode, int action, int m
 		else if (action == GLFW_PRESS && key == GLFW_KEY_S) {
 			DefferedPtr->toggleSSFeature();
 		}
-		else if (action == GLFW_PRESS && key == GLFW_KEY_F1) {
+		else if (action == GLFW_PRESS && key == GLFW_KEY_F2) {
 		Console::print("SSAO with 1 directional light");
 		DefferedPtr->activateSSAO();
 		}
-		else if (action == GLFW_PRESS && key == GLFW_KEY_F2) {
+		else if (action == GLFW_PRESS && key == GLFW_KEY_F1) {
 		Console::print("Standard deffered shading with 31 directional lights");
 		DefferedPtr->activateDeffered();
 		}
@@ -181,6 +185,42 @@ void keyCallback(GLFWwindow* windowPtr, int key, int scancode, int action, int m
 		Console::print("SSAO texture only");
 		DefferedPtr->activateSSAOTexture();
 		}
+		else if (action == GLFW_PRESS && key == GLFW_KEY_U) {
+			if (DefferedPtr->SSDOisActive()) {
+				DefferedPtr->indirectLightPower = std::min(DefferedPtr->indirectLightPower + 0.3f, 5.4f);
+				std::cout << "Power of indirect Light is increasing " << DefferedPtr->indirectLightPower << std::endl;
+			}
+		}
+		else if (action == GLFW_PRESS && key == GLFW_KEY_Y) {
+			if (DefferedPtr->SSDOisActive()) {
+				DefferedPtr->indirectLightPower = std::max(DefferedPtr->indirectLightPower - 0.3f, 0.4f);
+				std::cout <<"Power of indirect Light is decreasing"<< DefferedPtr->indirectLightPower << std::endl;
+			}
+		}
+		else if (action == GLFW_PRESS && key == GLFW_KEY_K) {
+			if ((DefferedPtr->SSDOisActive()) || (DefferedPtr->SSAOisActive())) {
+				DefferedPtr->radius = std::min(DefferedPtr->radius + 0.05f, 0.6f);
+				std::cout << "increasing in kernel's radius " << DefferedPtr->radius << std::endl;
+			}
+		}
+		else if (action == GLFW_PRESS && key == GLFW_KEY_J) {
+			if ((DefferedPtr->SSDOisActive()) || (DefferedPtr->SSAOisActive())) {
+				DefferedPtr->radius = std::max(DefferedPtr->radius - 0.05f, 0.1f);
+				std::cout << "decreasing in kernel's radius " << DefferedPtr->radius << std::endl;
+			}
+		}
+		else if (action == GLFW_PRESS && key == GLFW_KEY_N) {
+			if ((DefferedPtr->SSDOisActive()) || (DefferedPtr->SSAOisActive())) {
+				DefferedPtr->bias = std::min(DefferedPtr->bias + 0.01f, 0.1f);
+				std::cout << "increasing the bias in blocker test " << DefferedPtr->bias << std::endl;
+			}
+		}
+		else if (action == GLFW_PRESS && key == GLFW_KEY_B) {
+			if ((DefferedPtr->SSDOisActive()) || (DefferedPtr->SSAOisActive())) {
+				DefferedPtr->bias = std::max(DefferedPtr->bias - 0.01f, 0.0f);
+				std::cout << "decreasing the bias in blocker test " << DefferedPtr->bias << std::endl;
+			}
+		}
 		else {
 			printHelp();
 		}
@@ -188,7 +228,7 @@ void keyCallback(GLFWwindow* windowPtr, int key, int scancode, int action, int m
 
 
 
-#ifdef RASTERIZER
+#ifdef LAB
 		else if (action == GLFW_PRESS && key == GLFW_KEY_TAB) {
 
 			isDisplayRaytracing = !isDisplayRaytracing;
@@ -264,14 +304,14 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 /// Executed each time the window is resized. Adjust the aspect ratio and the rendering viewport to the current window. 
 void windowSizeCallback(GLFWwindow* windowPtr, int width, int height) {
 	scenePtr->camera()->setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
-#ifdef RASTERIZER
+#ifdef LAB
 	rasterizerPtr->setResolution(width, height);
 	rayTracerPtr->setResolution(width, height);
-#endif // RASTERIZER
+#endif // LAB
 
 #ifdef DEFFERED
 	DefferedPtr->setResolution(width, height);
-#endif // !RASTERIZER
+#endif // !LAB
 	
 }
 
@@ -419,7 +459,7 @@ void initScene() {
 #endif // !DEFFERED
 
 	
-#ifdef RASTERIZER
+#ifdef LAB
 	
 	auto light1 = std::make_shared<LightSource>(LightSource(glm::vec3(0.0, -0.7, -0.7), glm::vec3(1.0, 1.0, 1.0), 10.f));
 	scenePtr->add(light1);
@@ -463,7 +503,7 @@ void initScene() {
 	scenePtr->add(meshGround);
 	scenePtr->add(material2);
 
-#endif // RASTERIZER
+#endif // LAB
 
 
 
@@ -484,12 +524,12 @@ void init() {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) // Load extensions for modern OpenGL
 		exitOnCriticalError("[Failed to initialize OpenGL context]");
 	initScene(); // Actual scene to render
-#ifdef RASTERIZER
+#ifdef LAB
 	rasterizerPtr = make_shared<Rasterizer>();
 	rasterizerPtr->init(basePath, scenePtr); // Mut be called before creating the scene, to generate an OpenGL context and allow mesh VBOs
 	rayTracerPtr = make_shared<RayTracer>();
 	rayTracerPtr->init(scenePtr);
-#endif // RASTERIZER
+#endif // LAB
 
 
 
@@ -512,13 +552,13 @@ void clear() {
 
 // The main rendering call
 void render() {
-#ifdef RASTERIZER
+#ifdef LAB
 	if (isDisplayRaytracing) {
 		//rasterizerPtr->display(rayTracerPtr->image()); //the rasterizer is displaying what is calculated by the cpu
 	}
 	else
 		rasterizerPtr->render(scenePtr);
-#endif // RASTERIZER
+#endif // LAB
 
 
 
