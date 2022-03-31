@@ -1,8 +1,9 @@
 MyRenderer
 SSDO feature
 Described in the following paper: Approximating Dynamic Global Illumination in Image Space
- https://people.mpi-inf.mpg.de/~ritschel/Papers/SSDO.pdf
+
 ==================================================
+link to paper : https://people.mpi-inf.mpg.de/~ritschel/Papers/SSDO.pdf
 
 Author of base code: Tamy Boubekeur (tamy.boubekeur@telecom-paris.fr)
 Author of the features: Mohamed Rached Waly 
@@ -43,9 +44,10 @@ cmake --build Build --config Release
 each time you want to recompile MyRenderer
 
 The resulting binary to use is always the onelocated in the MyRenderer directory, you can safely ignore whatever is generated in the Build director
-    
+
+You can run the executable "MyRenderer" directly    
 ### Commands for the executable:
-    
+
     Mouse command
 	Left button: rotate came
 	Middle button: zo
@@ -62,4 +64,6 @@ The resulting binary to use is always the onelocated in the MyRenderer directory
 	B/N decrease/increase bias in blocker test in SSDO/SSAO mode
 	J/K decrease/increase radius in SSDO/SSAO mode
 	Y/U decrease/increase indirect Light bounce in SSDO mode
+
+
     
