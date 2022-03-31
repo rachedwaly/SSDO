@@ -32,7 +32,7 @@ public:
 	void renderSSAOTexture(std::shared_ptr<Scene> scenePtr);
 
 	void clear();
-	void genGBuffer();
+	void genBuffers();
 	void loadTextures(const std::string& basePath);
 	void renderQuadToScreen();
 	void GeometryPass(std::shared_ptr<Scene> scenePtr);

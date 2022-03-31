@@ -17,7 +17,7 @@ void DefferedRenderer::init(const std::string& basePath, const std::shared_ptr<S
 	
 	loadShaderProgram(basePath);
 	loadTextures(basePath);
-	genGBuffer();
+	genBuffers();
 	
 	size_t numOfMeshes = scenePtr->numOfMeshes();
 	for (size_t i = 0; i < numOfMeshes; i++)
@@ -145,13 +145,38 @@ void DefferedRenderer::loadShaderProgram(const std::string& basePath) {
 		exitOnCriticalError(std::string("[Error loading display shader program]") + e.what());
 	}
 }
+void DefferedRenderer::render(std::shared_ptr<Scene> scenePtr) {
+	if (SSAOactive) {
+		GeometryPass(scenePtr);
+		SSAOTexturePass(scenePtr);
+		SSAOBlurPass(scenePtr);
+		SSAOLightingPass(scenePtr);
+	}
 
+	if (SSDOactive) {
+		GeometryPass(scenePtr);
+		SSDOLightingPass(scenePtr);
+		SSDO(scenePtr);
+		SSDOBlurPass(scenePtr);
+	}
+
+	if (defferedActive) {
+		GeometryPass(scenePtr);
+		defferedLightingPass(scenePtr);
+
+	}
+	if (showOnlySSAOTexture) {
+		GeometryPass(scenePtr);
+		renderSSAOTexture(scenePtr);
+	}
+
+}
 
 float lerp(float a, float b, float f)
 {
 	return a + f * (b - a);
 }
-void DefferedRenderer::genGBuffer() {
+void DefferedRenderer::genBuffers() {
 	
 	glGenFramebuffers(1, &gBuffer);
 	//bind the gbuffer to modify it
@@ -542,32 +567,7 @@ void DefferedRenderer::SSDOBlurPass(std::shared_ptr<Scene> scenePtr)
 	renderQuadToScreen();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-void DefferedRenderer::render(std::shared_ptr<Scene> scenePtr) {
-	if (SSAOactive) {
-		GeometryPass(scenePtr);
-		SSAOTexturePass(scenePtr);
-		SSAOBlurPass(scenePtr);
-		SSAOLightingPass(scenePtr);
-	}
 
-	if (SSDOactive) {
-		GeometryPass(scenePtr);
-		SSDOLightingPass(scenePtr);
-		SSDO(scenePtr);
-		SSDOBlurPass(scenePtr);
-	}
-
-	if (defferedActive) {
-		GeometryPass(scenePtr);
-		defferedLightingPass(scenePtr);
-
-	}
-	if (showOnlySSAOTexture) {
-		GeometryPass(scenePtr);
-		renderSSAOTexture(scenePtr);
-	}
-	
-}
 
 void DefferedRenderer::renderSSAOTexture(std::shared_ptr<Scene> scenePtr) {
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
