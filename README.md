@@ -42,4 +42,24 @@ cmake --build Build --config Release
 ```
 each time you want to recompile MyRenderer
 
-The resulting binary to use is always the onelocated in the MyRenderer directory, you can safely ignore whatever is generated in the Build directory. 
+The resulting binary to use is always the onelocated in the MyRenderer directory, you can safely ignore whatever is generated in the Build director
+    
+### Commands for the executable:
+    
+    Mouse command
+	Left button: rotate came
+	Middle button: zo
+	Right button: pan cametKeyboard command
+	ESC: quit the progr
+	H: print this he
+	F: decrease field of vi
+	G: increase field of vi
+    S: toggle screen space feature can be SSDO or SS
+	F2: activate SSAO mode in the sce
+	F1: activate standard Deffered mode in the sce
+	F3: activate SSDO mode in the sce
+	F4: show only the SSAO texture on the red channe
+	B/N decrease/increase bias in blocker test in SSDO/SSAO mode
+	J/K decrease/increase radius in SSDO/SSAO mode
+	Y/U decrease/increase indirect Light bounce in SSDO mode
+    
