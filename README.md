@@ -52,7 +52,7 @@ You can run the executable "MyRenderer" directly
 	Left button: rotate came
 	Middle button: zoom
 	Right button: pan cametKeyboard command
-	ESC: quit the progrzm
+	ESC: quit the program
 	H: print this help
 	F: decrease field of visibility
 	G: increase field of visibility
