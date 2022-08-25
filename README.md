@@ -50,17 +50,17 @@ You can run the executable "MyRenderer" directly
 
     Mouse command
 	Left button: rotate came
-	Middle button: zo
+	Middle button: zoom
 	Right button: pan cametKeyboard command
-	ESC: quit the progr
-	H: print this he
-	F: decrease field of vi
-	G: increase field of vi
-    S: toggle screen space feature can be SSDO or SS
-	F2: activate SSAO mode in the sce
-	F1: activate standard Deffered mode in the sce
-	F3: activate SSDO mode in the sce
-	F4: show only the SSAO texture on the red channe
+	ESC: quit the progrzm
+	H: print this help
+	F: decrease field of visibility
+	G: increase field of visibility
+    S: toggle screen space feature can be SSDO or SSAO
+	F2: activate SSAO mode in the scene
+	F1: activate standard Deffered mode in the scene
+	F3: activate SSDO mode in the scene
+	F4: show only the SSAO texture on the red channel
 	B/N decrease/increase bias in blocker test in SSDO/SSAO mode
 	J/K decrease/increase radius in SSDO/SSAO mode
 	Y/U decrease/increase indirect Light bounce in SSDO mode
